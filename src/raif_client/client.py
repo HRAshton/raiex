@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 import requests
 
-from src.raif_client.grid_parsers import parse_grid_data
+from src.raif_client.grid_parser import parse_grid_data
 from src.raif_client.helpers import argon2_hash_hex, strip_bom
 
 BASE_URL = "https://rol.raiffeisenbank.rs/Retail/Protected/Services/"
@@ -58,16 +58,20 @@ def login(session: requests.Session, username: str, password: str) -> None:
     _handle_login_response(session, login_result, "UsernamePassword")
 
 
-def get_all_account_balance(session: requests.Session) -> list[dict[str, str]]:
+def get_all_account_balance(session: requests.Session, system_parameters: dict) -> list[dict[str, str]]:
     response = _invoke(
         session,
         "GetAllAccountBalance",
         {"gridName": "RetailAccountBalancePreviewFlat-L"},
     )
-    return parse_grid_data(response, "RetailAccountBalancePreviewFlat-L")
+    return parse_grid_data(system_parameters, response, "RetailAccountBalancePreviewFlat-L")
 
 
-def get_transactional_account_turnover(session: requests.Session, account: dict[str, str]) -> list[dict[str, str]]:
+def get_transactional_account_turnover(
+        session: requests.Session,
+        system_parameters: dict,
+        account: dict[str, str],
+) -> list[dict[str, str]]:
     today = datetime.date.today()
     one_year_before = today - datetime.timedelta(days=365)
     response = _invoke(
@@ -89,7 +93,10 @@ def get_transactional_account_turnover(session: requests.Session, account: dict[
             },
         },
     )
-    return parse_grid_data(response[0][1:][0], "RetailAccountTurnoverTransactionPreviewMasterDetail-S")
+    return parse_grid_data(
+        system_parameters,
+        response[0][1:][0],
+        "RetailAccountTurnoverTransactionPreviewMasterDetail-S")
 
 
 def _invoke(session: requests.Session, method: str, data: Dict[str, Any]) -> Any:

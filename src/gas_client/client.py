@@ -13,7 +13,8 @@ def send_data(upload_url: str, integrity_hash_salt: str, transactions: list[dict
     json_string = json.dumps(data_to_send, ensure_ascii=False)
     integrity_hash = _calculate_integrity_hash(integrity_hash_salt, json_string)
 
-    requests.post(upload_url, data=json_string, params={"hash": integrity_hash})
+    res = requests.post(upload_url, data=json_string, params={"hash": integrity_hash})
+    res.raise_for_status()
 
 
 def _calculate_integrity_hash(integrity_hash_salt: str, data: str) -> str:
