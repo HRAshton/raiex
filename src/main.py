@@ -1,8 +1,8 @@
 import logging
 from os import environ
 
-from gas_client.client import send_data
-from raif_client.client import create_session_with_cookies, login, \
+from src.gas_client.client import send_data
+from src.raif_client.client import create_session_with_cookies, login, \
     get_system_parameters_cached, get_all_account_balance, get_transactional_account_turnover
 
 
