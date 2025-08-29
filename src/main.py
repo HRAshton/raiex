@@ -44,6 +44,9 @@ def main():
 
 if __name__ == "__main__":
     import sys
+    from dotenv import load_dotenv
+
+    load_dotenv(".secrets")
 
     logging.basicConfig(level=logging.INFO)
     logging.info("Starting transaction export")
